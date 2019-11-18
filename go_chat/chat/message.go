@@ -1,8 +1,8 @@
-package main
+package chat
 
 type Message struct {
-	UserName string `json: "UserName"`
-	Body string `json:"body"`
+	UserName  string `json: "UserName"`
+	Body      string `json:"body"`
 	Timestamp string `json:"timestamp"`
 }
 
