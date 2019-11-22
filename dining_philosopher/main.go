@@ -35,7 +35,7 @@ func (phil *Philosopher) getChopsticks() {
 	fmt.Printf("%v got his chopstick. \n", phil.name)
 	select {
 	case <-phil.neighbor.chopstick:
-		fmt.Printf("%v got %v's chopstick.\n", phil.neighbor.name)
+		fmt.Printf("%v got %v's chopstick.\n", phil.name, phil.neighbor.name)
 		fmt.Printf("%v has two chopsticks.\n", phil.name)
 		return
 	case <-timeout:
