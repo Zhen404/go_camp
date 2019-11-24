@@ -6,18 +6,18 @@ import (
 	"time"
 )
 
-// Philosopher struct contains name, chopstick channel, neighbor philosopher
-// chopstick channel is used for demonstrate if the chopstick of the philosopher available
+// Philosopher struct contains name, fork channel, neighbor philosopher
+// fork channel is used for demonstrate if the fork of the philosopher available
 type Philosopher struct {
 	name      string
-	chopstick chan bool
+	fork chan bool
 	neighbor  *Philosopher
 }
 
 // Must have this function to declare an object
 func makePhilosopher(name string, neighbor *Philosopher) *Philosopher {
 	phil := &Philosopher{name, make(chan bool, 1), neighbor}
-	phil.chopstick <- true
+	phil.fork <- true
 	return phil
 }
 
@@ -33,42 +33,42 @@ func (phil *Philosopher) eat() {
 	time.Sleep(time.Duration(rand.Int63n(1e9)))
 }
 
-func (phil *Philosopher) getChopsticks() {
+func (phil *Philosopher) getForks() {
 	// Declare a channal indicating timeout
 	timeout := make(chan bool, 1)
 	go func() { time.Sleep(1e9); timeout <- true }()
-	// taking the chopstick; chopstick is not available
-	<-phil.chopstick
-	fmt.Printf("%v got his chopstick. \n", phil.name)
+	// taking the fork; fork is not available
+	<-phil.fork
+	fmt.Printf("%v got his fork. \n", phil.name)
 	select {
-	// if the neighbor's chopstick is availble, return, ready to eat
-	case <-phil.neighbor.chopstick:
-		fmt.Printf("%v got %v's chopstick.\n", phil.name, phil.neighbor.name)
-		fmt.Printf("%v has two chopsticks.\n", phil.name)
+	// if the neighbor's fork is availble, return, ready to eat
+	case <-phil.neighbor.fork:
+		fmt.Printf("%v got %v's fork.\n", phil.name, phil.neighbor.name)
+		fmt.Printf("%v has two fork.\n", phil.name)
 		return
-	// after amount of time the philosopher taking up his own chopstick, the
-	// philosopher has to put the chopstick down letting others to use
-	// then think for a while and try get chopstick operation again
+	// after amount of time the philosopher taking up his own fork, the
+	// philosopher has to put the fork down letting others to use
+	// then think for a while and try get fork operation again
 	case <-timeout:
-		phil.chopstick <- true
+		phil.fork <- true
 		phil.think()
-		phil.getChopsticks()
+		phil.getForks()
 	}
 }
 
-func (phil *Philosopher) returnChopsticks() {
-	// after a philosopher finish eating, making his chopstick channel
-	// and his neighbor's chopstick channel demeonstrate available again
-	phil.chopstick <- true
-	phil.neighbor.chopstick <- true
+func (phil *Philosopher) returnForks() {
+	// after a philosopher finish eating, making his fork channel
+	// and his neighbor's fork channel demeonstrate available again
+	phil.fork <- true
+	phil.neighbor.fork <- true
 }
 
 func (phil *Philosopher) dine(announce chan *Philosopher) {
 	// the whole procedure of dining
 	phil.think()
-	phil.getChopsticks()
+	phil.getForks()
 	phil.eat()
-	phil.returnChopsticks()
+	phil.returnForks()
 	announce <- phil
 }
 
@@ -85,7 +85,7 @@ func main() {
 	// let the first philosopher to be the neighbor of the last philosopher
 	philosophers[0].neighbor = phil
 	fmt.Printf("There are %v philosophers sitting at a table.\n", len(names))
-	fmt.Println("They each have one chopstick, and must borrow from their neighbor to eat.")
+	fmt.Println("They each have one fork, and must borrow from their neighbor to eat.")
 	announce := make(chan *Philosopher)
 	for _, phil := range philosophers {
 		// dine occur concurrently
